@@ -26,35 +26,42 @@ namespace PermissionsReporter
             var directoriesPaths = (level == -1 ? Directory.GetDirectories(baseDirPath, "*", SearchOption.AllDirectories) : RecursiveGlob(baseDirPath, level)).ToList();
             WriteLine($"Found {directoriesPaths.Count()} directories");
             WriteLine("Checking permissions...");
-
-            // A
-            var dirs = GetDirPerm(directoriesPaths);
-            // // B
-//            var totalDirs = directoriesPaths.Count;
-//            int dirCount = 0;
-//            var dirs = new List<DirectoryPermissions>();
-            //            foreach (var dirPath in directoriesPaths)
-            //            {
-            //                dirs.Add(new DirectoryPermissions(dirPath));
-            //                if (dirCount % (totalDirs / 10) == 0)
-            //                    WriteLine($"{Math.Round((double)dirCount / totalDirs * 100)}% {dirCount} out of {totalDirs}");
-            //                dirCount++;
-            //            }
-            WriteLine($"Checked {directoriesPaths.Count} directories");
-            WriteLine("Writing directories report...");
-            WriteLine($"Saved {WriteReport(dirs)}");
-            using (var pBar = new ProgressBar(directoriesPaths.Count, "", ConsoleColor.White))
+            try
             {
-                var dir = DirTree(baseDirPath, level, 0, pBar);
-                WriteLine($"Saved {WriteJson(dir)}");
+                // A
+                var dirs = GetDirPerm(directoriesPaths);
+                // // B
+                //            var totalDirs = directoriesPaths.Count;
+                //            int dirCount = 0;
+                //            var dirs = new List<DirectoryPermissions>();
+                //            foreach (var dirPath in directoriesPaths)
+                //            {
+                //                dirs.Add(new DirectoryPermissions(dirPath));
+                //                if (dirCount % (totalDirs / 10) == 0)
+                //                    WriteLine($"{Math.Round((double)dirCount / totalDirs * 100)}% {dirCount} out of {totalDirs}");
+                //                dirCount++;
+                //            }
+                WriteLine($"Checked {directoriesPaths.Count} directories");
+                WriteLine("Writing directories report...");
+                WriteLine($"Saved {WriteReport(dirs)}");
+                using (var pBar = new ProgressBar(directoriesPaths.Count, "", ConsoleColor.White))
+                {
+                    var dir = DirTree(baseDirPath, level, 0, pBar);
+                    WriteLine($"Saved {WriteJson(dir)}");
+                }
+                //            WriteLine("Writing directories report...");
+                //            WriteLine($"Saved {WriteDirsReport(dirs)}");
+                //            WriteLine("Writing users report...");
+                //            WriteLine($"Saved {WriteUsersReport(dirs)}");
+                WriteLine("Done!");
+                WriteLine("press any key to exit");
+                Console.ReadKey();
             }
-            //            WriteLine("Writing directories report...");
-            //            WriteLine($"Saved {WriteDirsReport(dirs)}");
-            //            WriteLine("Writing users report...");
-            //            WriteLine($"Saved {WriteUsersReport(dirs)}");
-            WriteLine("Done!");
-            WriteLine("press any key to exit");
-            Console.ReadKey();
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                Console.WriteLine(ex.StackTrace);
+            }
         }
 
         private static IEnumerable<DirectoryPermissions> GetDirPerm(List<string> dirsPaths)

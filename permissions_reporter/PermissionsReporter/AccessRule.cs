@@ -38,7 +38,7 @@ namespace PermissionsReporter
         public AccessRule(DirectoryPermissions dir, string account, AccessControlType type, FileSystemRights rights, bool isInherited)
         {
             Dir = dir;
-            Account = new Entity(account);
+            Account = Entity.GetEntity(account);
             Type = type;
             Rights = rights;
             IsInherited = isInherited;
@@ -54,7 +54,7 @@ namespace PermissionsReporter
         public AccessRule(DirectoryPermissions dir, FileSystemAccessRule ace)
         {
             Dir = dir;
-            Account = new Entity(ace.IdentityReference.Value);
+            Account = Entity.GetEntity(ace.IdentityReference.Value);
             Type = ace.AccessControlType;
             Rights = ace.FileSystemRights;
             IsInherited = ace.IsInherited;
@@ -62,7 +62,7 @@ namespace PermissionsReporter
         }
         public AccessRule(FileSystemAccessRule ace)
         {
-            Account = new Entity(ace.IdentityReference.Value);
+            Account = Entity.GetEntity(ace.IdentityReference.Value);
             Type = ace.AccessControlType;
             Rights = ace.FileSystemRights;
             IsInherited = ace.IsInherited;
