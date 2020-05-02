@@ -28,19 +28,7 @@ namespace PermissionsReporter
             WriteLine("Checking permissions...");
             try
             {
-                // A
                 var dirs = GetDirPerm(directoriesPaths);
-                // // B
-                //            var totalDirs = directoriesPaths.Count;
-                //            int dirCount = 0;
-                //            var dirs = new List<DirectoryPermissions>();
-                //            foreach (var dirPath in directoriesPaths)
-                //            {
-                //                dirs.Add(new DirectoryPermissions(dirPath));
-                //                if (dirCount % (totalDirs / 10) == 0)
-                //                    WriteLine($"{Math.Round((double)dirCount / totalDirs * 100)}% {dirCount} out of {totalDirs}");
-                //                dirCount++;
-                //            }
                 WriteLine($"Checked {directoriesPaths.Count} directories");
                 WriteLine("Writing directories report...");
                 WriteLine($"Saved {WriteReport(dirs)}");
@@ -49,10 +37,6 @@ namespace PermissionsReporter
                     var dir = DirTree(baseDirPath, level, 0, pBar);
                     WriteLine($"Saved {WriteJson(dir)}");
                 }
-                //            WriteLine("Writing directories report...");
-                //            WriteLine($"Saved {WriteDirsReport(dirs)}");
-                //            WriteLine("Writing users report...");
-                //            WriteLine($"Saved {WriteUsersReport(dirs)}");
                 WriteLine("Done!");
                 WriteLine("press any key to exit");
                 Console.ReadKey();
@@ -123,21 +107,6 @@ namespace PermissionsReporter
         {
             return String.Join(",", line.Select(s => $"\"{s}\""));
         }
-        private static List<string> GetDirLine(DirectoryPermissions dir)
-        {
-            List<string> fields = new List<string> {dir.DirPath};
-            foreach (var rule in dir.AccessRules)
-                fields.Add(rule.ToStringDir());
-            return fields;
-        }
-
-        private static List<string> GetUserLine(Entity user, List<AccessRule> rules)
-        {
-            var fields = new List<string>() {user.DisplayName};
-            foreach (var rule in rules)
-                fields.Add(rule.ToStringUser());
-            return fields;
-        }
 
         private static List<string> GetRuleLine(AccessRule rule)
         {
@@ -148,15 +117,6 @@ namespace PermissionsReporter
             };
         }
 
-        private static string WriteDirsReport(IEnumerable<DirectoryPermissions> dirs)
-        {
-            var today = DateTime.Today.ToString("yyyy_MM_dd");
-            string filePath = Path.GetFullPath(today + "_directories_permissions_report.csv");
-            using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
-                foreach (var dir in dirs)
-                    writer.WriteLine(GetCsvLine(GetDirLine(dir)));
-            return filePath;
-        }
         private static string WriteReport(IEnumerable<DirectoryPermissions> dirs)
         {
             var today = DateTime.Today.ToString("yyyy_MM_dd");
@@ -184,23 +144,6 @@ namespace PermissionsReporter
                 writer.Write(json);
             }
 
-            return filePath;
-        }
-
-        private static string WriteUsersReport(IEnumerable<DirectoryPermissions> dirs)
-        {
-            var usersDict = new Dictionary<Entity, List<AccessRule>>();
-            foreach (var dir in dirs)
-                foreach (var rule in dir.AccessRules)
-                {
-                    var userRules = usersDict.GetValueOrDefault(rule.Account, () => new List<AccessRule>());
-                    userRules.Add(rule);
-                }
-            var today = DateTime.Today.ToString("yyyy_MM_dd");
-            string filePath = Path.GetFullPath(today + "_users_permissions_report.csv");
-            using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
-                foreach (var userPermissions in usersDict)
-                    writer.WriteLine(GetCsvLine(GetUserLine(userPermissions.Key, userPermissions.Value)));
             return filePath;
         }
 
@@ -246,22 +189,6 @@ namespace PermissionsReporter
                 return retVal;
             Console.WriteLine("invalid value has been entered");
             return null;
-        }
-
-        private static void PrintDirPermissions(string dirPath)
-        {
-            DirectoryInfo dInfo = new DirectoryInfo(dirPath);
-            DirectorySecurity dSecurity = dInfo.GetAccessControl();
-            var accessRules = dSecurity.GetAccessRules(true, true, typeof(System.Security.Principal.NTAccount));
-            string tabs = "\t";
-            foreach (FileSystemAccessRule ace in accessRules)
-            {
-                Console.WriteLine("{0}Account: {1}", tabs, ace.IdentityReference.Value);
-                Console.WriteLine("{0}Type: {1}", tabs, ace.AccessControlType);
-                Console.WriteLine("{0}Rights: {1}", tabs, ace.FileSystemRights);
-                Console.WriteLine("{0}Inherited: {1}", tabs, ace.IsInherited);
-                Console.WriteLine();
-            }
         }
     }
 }
