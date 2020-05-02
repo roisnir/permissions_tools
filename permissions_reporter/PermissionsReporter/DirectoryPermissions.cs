@@ -39,10 +39,12 @@ namespace PermissionsReporter
             foreach (FileSystemAccessRule ace in acCollection)
             {
                 var rule = new AccessRule(dir, ace);
+                bool excluded = UsersExclude.Contains(rule.Account.DisplayName) || UsersExclude.Contains(rule.Account.UserName) || rule.Account.IsEnabled == false;
+                if (excluded)
+                    continue;
                 if (!rule.IsExpandable)
                 {
-                    bool excluded = UsersExclude.Contains(rule.Account.DisplayName) || UsersExclude.Contains(rule.Account.UserName) || rule.Account.IsEnabled == false;
-                    if (!excluded) yield return rule;
+                    yield return rule;
                     continue;
                 }
                 foreach (var subRule in rule.Expand())

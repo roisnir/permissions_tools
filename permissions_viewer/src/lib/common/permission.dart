@@ -71,7 +71,8 @@ class Directory {
 //}
 Future<Directory> readPermissionsJson(File jsonFile) async {
   final data = await jsonFile.readAsString();
-  return compute(parseString, data);
+//  return compute(parseString, data);
+  return parseString(data);
 }
 
 Directory parseString(String data){

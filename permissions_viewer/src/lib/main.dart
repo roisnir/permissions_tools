@@ -13,6 +13,7 @@
 // limitations under the License.
 import 'dart:io' show Platform, File;
 import 'dart:math' as math;
+import 'package:example_flutter/backup.dart';
 import 'package:example_flutter/permissions_view.dart';
 import 'package:flutter/material.dart';
 import 'package:file_chooser/file_chooser.dart';
@@ -35,7 +36,7 @@ void main() {
       final frame = Rect.fromLTWH(left, top, width, height);
       window_size.setWindowFrame(frame);
       window_size
-          .setWindowTitle('Flutter Testbed on ${Platform.operatingSystem}');
+          .setWindowTitle('Permissions Viewer');
 
       if (Platform.isMacOS) {
         window_size.setWindowMinSize(Size(800, 600));
@@ -107,7 +108,8 @@ class _MainPermissionsState extends State<MainPermissions> {
           initialDirectory = (await getApplicationDocumentsDirectory()).path;
           final result = await showOpenPanel(
               allowsMultipleSelection: false,
-              initialDirectory: initialDirectory);
+              initialDirectory: initialDirectory,
+          allowedFileTypes: [FileTypeFilterGroup(label: 'JSON files', fileExtensions: ['json'])]);
           if (result.canceled) return;
           setState(() {
             fileName = result.paths[0];
