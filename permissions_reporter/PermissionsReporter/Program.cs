@@ -22,6 +22,8 @@ namespace PermissionsReporter
                 return;
             int level = (int)_level;
             DirectoryPermissions.UsersExclude.AddRange(excludedUsers);
+            foreach (var user in Entity.GetEntity("Shares Drive Users").Expand())
+                DirectoryPermissions.UsersWhitelist.Add(user.UserName);
             WriteLine($"Fetching directories...");
             var directoriesPaths = (level == -1 ? Directory.GetDirectories(baseDirPath, "*", SearchOption.AllDirectories) : RecursiveGlob(baseDirPath, level)).ToList();
             WriteLine($"Found {directoriesPaths.Count()} directories");

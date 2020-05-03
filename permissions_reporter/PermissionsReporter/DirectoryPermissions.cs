@@ -22,6 +22,9 @@ namespace PermissionsReporter
             @"ServerAdmin$",
             @"NT AUTHORITY\Authenticated Users"
         };
+
+        public static List<string> UsersWhitelist= new List<string>();
+
         public String DirPath {get; set;}
         public String Name => Path.GetFileName(DirPath);
         public String DirBasePath => Path.GetDirectoryName(DirPath);
@@ -30,29 +33,56 @@ namespace PermissionsReporter
         public DirectoryPermissions(string dirPath, bool recursive=true)
         {
             DirPath = dirPath;
-            AccessRules = GetAccessRules(this, recursive).ToList();
+            AccessRules = GetAccessRules(this, recursive);
         }
-        public static IEnumerable<AccessRule> GetAccessRules(DirectoryPermissions dir, bool recursive=true)
+
+        private static bool IsExcluded(Entity account)
+        { 
+            return UsersExclude.Contains(account.DisplayName) || 
+                   UsersExclude.Contains(account.UserName) ||
+                   account.IsEnabled == false ||
+                   (
+                     (!UsersWhitelist.Contains(account.DisplayName)) &&
+                     (!UsersWhitelist.Contains(account.UserName))
+                   );
+        }
+
+        private static void AddRule(List<AccessRule> accessRules, AccessRule rule)
         {
+            if (IsExcluded(rule.Account))
+            {
+                return;
+            }
+            var existing = accessRules.Find(r => r.Account.UserName == rule.Account.UserName);
+            if (existing is null)
+            {
+                accessRules.Add(rule);
+            }
+            else
+            {
+                rule.Rights |= existing.Rights;
+            }
+        }
+
+        public static List<AccessRule> GetAccessRules(DirectoryPermissions dir, bool recursive=true)
+        {
+            List<AccessRule> accessRules = new List<AccessRule>();
             var acCollection = new DirectoryInfo(dir.DirPath).GetAccessControl().GetAccessRules(
                 true, true, typeof(System.Security.Principal.NTAccount));
             foreach (FileSystemAccessRule ace in acCollection)
             {
                 var rule = new AccessRule(dir, ace);
-                bool excluded = UsersExclude.Contains(rule.Account.DisplayName) || UsersExclude.Contains(rule.Account.UserName) || rule.Account.IsEnabled == false;
-                if (excluded)
-                    continue;
                 if (!rule.IsExpandable)
                 {
-                    yield return rule;
+                    AddRule(accessRules, rule);
                     continue;
                 }
                 foreach (var subRule in rule.Expand())
                 {
-                    if (UsersExclude.Contains(subRule.Account.DisplayName) || UsersExclude.Contains(subRule.Account.UserName) || (subRule.Account.IsEnabled == false)) continue;
-                    yield return subRule;
+                    AddRule(accessRules, subRule);
                 }
             }
+            return accessRules;
         }
 
 
