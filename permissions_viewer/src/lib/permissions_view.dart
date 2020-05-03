@@ -90,7 +90,7 @@ class _PermissionsViewState extends State<PermissionsView> {
                 padding: EdgeInsets.only(left: 20),
               ),
               Flexible(
-                child: PermissionList(selectedDir.permissions),
+                child: PermissionList(selectedDir.permissions..sort((a, b) => a.displayName.compareTo(b.displayName))),
               ),
 //          Expanded(child: Dir(dir: widget.dir)),
 //          PermissionList(selectedDir.permissions),
