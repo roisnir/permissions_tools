@@ -73,7 +73,11 @@ class Rights {
     if (this.contains(Rights.fullControl))
       return 'Full control';
     final simpleRights = <String>[];
-    if (this.contains(Rights.read)) simpleRights.add('Read');
+    if (this.contains(Rights.read)) {
+      simpleRights.add('Read');
+    } else {
+      if (this.contains(Rights.listDirectory)) simpleRights.add('List Files');
+    }
     if (this.contains(Rights.write)) simpleRights.add('Write');
     if (this.contains(Rights.traverse)) simpleRights.add('Execute');
     if (this.contains(Rights.delete)) simpleRights.add('Delete');
