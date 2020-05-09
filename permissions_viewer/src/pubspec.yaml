@@ -15,7 +15,8 @@ dependencies:
   quiver: ^2.1.3
   flutter_breadcrumb: ^0.1.2
   cupertino_icons: ^0.1.0
-  flutter_treeview: ^0.3.0+1
+  flutter_treeview:
+    path: ../../../flutter_treeview
   csv: ^4.0.3
   # FDE plugins.
   # Note: In an actual project, these would be included via 'git:' reference,

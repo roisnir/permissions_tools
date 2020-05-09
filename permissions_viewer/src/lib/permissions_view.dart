@@ -20,7 +20,8 @@ class _PermissionsViewState extends State<PermissionsView> {
   TreeViewController treeCtrl;
   List<Node<Directory>> dirNodes;
   TextEditingController userSearchCtrl = TextEditingController();
-  ScrollController scrollController = ScrollController();
+  ScrollController permissionsScrollController = ScrollController();
+  ScrollController dirScrollController = ScrollController();
   bool hasResults = true;
 
   @override
@@ -38,7 +39,7 @@ class _PermissionsViewState extends State<PermissionsView> {
         .map<Node>((n) => createRootNode(n, search))
         .where((n) => n != null)
         .toList();
-    if ((!search.isEmpty) && children.length == 0 && !_dir.path.contains(search)) return null;
+    if ((!search.isEmpty) && children.length == 0 && !_dir.path.toLowerCase().contains(search.toLowerCase())) return null;
     return Node<Directory>(
         key: _dir.path,
         label: _dir.path.split('\\').last,
@@ -130,7 +131,7 @@ class _PermissionsViewState extends State<PermissionsView> {
         ),);
     return PermissionList(
                       permissions,
-                      scrollController);
+                      permissionsScrollController);
   }
 
   TextField buildTextField() {
@@ -173,6 +174,7 @@ class _PermissionsViewState extends State<PermissionsView> {
         });
       },
       treeViewController: treeCtrl,
+      scrollController: dirScrollController,
     );
   }
 
