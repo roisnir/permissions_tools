@@ -40,8 +40,6 @@ namespace PermissionsReporter
                     WriteLine($"Saved {WriteJson(dir)}");
                 }
                 WriteLine("Done!");
-                WriteLine("press any key to exit");
-                Console.ReadKey();
             }
             catch (Exception ex)
             {
@@ -123,15 +121,23 @@ namespace PermissionsReporter
         {
             var today = DateTime.Today.ToString("yyyy_MM_dd");
             string filePath = Path.GetFullPath(today + "_permissions_report.csv");
-            using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
+            try
             {
-                writer.WriteLine($"Permission Report {today}");
-                writer.WriteLine(GetCsvLine(new string[] {"Directory Path", "Display Name", "Rights"}));
-                foreach (var dir in dirs)
+                using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
                 {
-                    foreach (var rule in dir.AccessRules)
-                        writer.WriteLine(GetCsvLine(GetRuleLine(rule)));
+                    writer.WriteLine($"Permission Report {today}");
+                    writer.WriteLine(GetCsvLine(new string[] { "Directory Path", "Display Name", "Rights" }));
+                    foreach (var dir in dirs)
+                    {
+                        foreach (var rule in dir.AccessRules)
+                            writer.WriteLine(GetCsvLine(GetRuleLine(rule)));
+                    }
                 }
+            }
+            catch (IOException ex) 
+            {
+                Console.WriteLine($"Can't access file {filePath}. (maybe it's open in another proccess?)");
+                Environment.Exit(1);
             }
 
             return filePath;

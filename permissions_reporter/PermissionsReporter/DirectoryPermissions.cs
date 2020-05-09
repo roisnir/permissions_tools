@@ -60,7 +60,7 @@ namespace PermissionsReporter
             }
             else
             {
-                rule.Rights |= existing.Rights;
+                existing.Rights |= rule.Rights;
             }
         }
 
