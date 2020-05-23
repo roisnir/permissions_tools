@@ -10,12 +10,12 @@ class Dir extends StatelessWidget {
   final TreeViewController treeViewController;
   final ScrollController scrollController;
 
-  Dir({
+  const Dir({
     @required this.dir,
     @required this.onChange,
-    this.onExpansionChange,
     @required this.treeViewController,
-    @required this.scrollController
+    @required this.scrollController,
+    this.onExpansionChange,
   });
 
   @override
@@ -24,6 +24,7 @@ class Dir extends StatelessWidget {
       controller: scrollController,
       isAlwaysShown: true,
       child: TreeView(
+        theme: TreeViewTheme(colorScheme: ColorScheme.light(primary: Theme.of(context).colorScheme.primary)),
         scrollController: scrollController,
         onNodeTap: onChange,
         onExpansionChanged: onExpansionChange,

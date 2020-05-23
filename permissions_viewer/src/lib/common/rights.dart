@@ -52,7 +52,7 @@ class Rights {
   }
 
   bool contains(Rights other) =>
-      (this.value & other.value) == other.value;
+      (value & other.value) == other.value;
 
   final int value;
   final Set<int> flags;
@@ -64,25 +64,31 @@ class Rights {
   Rights.fromName(String name) : this.fromValue(fileSystemRights.inverse[name]);
 
   @override
-  int get hashCode => this.value;
+  int get hashCode => value;
 
   @override
-  bool operator ==(other) => this.value == (other as Rights).value;
+  bool operator ==(dynamic other) => other is Rights && value == other.value;
 
   String get simpleName {
-    if (this.contains(Rights.fullControl))
+    if (contains(Rights.fullControl))
       return 'Full control';
     final simpleRights = <String>[];
-    if (this.contains(Rights.read)) {
+    if (contains(Rights.read)) {
       simpleRights.add('Read');
     } else {
-      if (this.contains(Rights.listDirectory)) simpleRights.add('List Files');
+      if (contains(Rights.listDirectory)) simpleRights.add('List Files');
     }
-    if (this.contains(Rights.write)) simpleRights.add('Write');
-    if (this.contains(Rights.traverse)) simpleRights.add('Execute');
-    if (this.contains(Rights.delete)) simpleRights.add('Delete');
-    if (simpleRights.length == 0)
-      return this.flags.map((v) => fileSystemRights[v]).join(', ');
+    if (contains(Rights.createDirectories) && contains(Rights.createFiles)) {
+      if (contains(Rights.write)) {
+        simpleRights.add('Write');
+      } else {
+        simpleRights.add('Create');
+      }
+    }
+    if (contains(Rights.write)) simpleRights.add('Write');
+    if (contains(Rights.delete)) simpleRights.add('Delete');
+    if (simpleRights.isEmpty)
+      return flags.map((v) => fileSystemRights[v]).join(', ');
     if (simpleRights.length == 1) return simpleRights[0];
     return '${simpleRights.sublist(0, simpleRights.length - 1).join(', ')}'
         ' and ${simpleRights.last}';

@@ -1,5 +1,4 @@
 import 'package:example_flutter/common/permission.dart';
-import 'package:example_flutter/common/rights.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +6,7 @@ class PermissionList extends StatelessWidget {
   final List<Permission> permissions;
   final ScrollController controller;
 
-  PermissionList(this.permissions, this.controller);
+  const PermissionList(this.permissions, this.controller);
 
   @override
   Widget build(BuildContext context) {

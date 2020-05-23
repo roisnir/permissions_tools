@@ -13,7 +13,6 @@
 // limitations under the License.
 import 'dart:io' show Platform, File;
 import 'dart:math' as math;
-import 'package:example_flutter/backup.dart';
 import 'package:example_flutter/permissions_view.dart';
 import 'package:flutter/material.dart';
 import 'package:file_chooser/file_chooser.dart';
@@ -84,7 +83,7 @@ class _MainPermissionsState extends State<MainPermissions> {
           Container(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             color: Colors.grey[200],
-              child: Text(fileName ?? "<no file selected>"))
+              child: Text(fileName ?? '<no file selected>'))
         ],),
         FutureBuilder<Directory>(
             future: dirFuture,
@@ -96,7 +95,7 @@ class _MainPermissionsState extends State<MainPermissions> {
       ],
     );
   }
-  buildFileSelectionButton(BuildContext context){
+  Widget buildFileSelectionButton(BuildContext context){
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: RaisedButton(

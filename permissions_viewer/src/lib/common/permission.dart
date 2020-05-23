@@ -26,18 +26,13 @@ class Permission {
 }
 
 Rights parseRights(String rights){
-  try {
-    if (rights == null || rights.isEmpty) return null;
-    final rightsStrings = rights.split(', ');
-    int rightsValue = rightsStrings.fold<int>(0, (int value, String element) =>
-    value | Rights
-        .fromName(element)
-        .value);
-    return Rights.fromValue(rightsValue);
-  }
-  catch (ex) {
-    print(ex);
-  }
+  if (rights == null || rights.isEmpty) return null;
+  final rightsStrings = rights.split(', ');
+  final rightsValue = rightsStrings.fold<int>(0, (value, element) =>
+  value | Rights
+      .fromName(element)
+      .value);
+  return Rights.fromValue(rightsValue);
 }
 
 class Directory {
@@ -46,7 +41,7 @@ class Directory {
   List<Permission> permissions;
 
   Directory(this.path, this.permissions, this.children){
-    this.permissions ??= [];
+    permissions ??= [];
   }
 
   Directory.fromJson(Map<String, dynamic> json){
@@ -71,8 +66,8 @@ class Directory {
 //}
 Future<Directory> readPermissionsJson(File jsonFile) async {
   final data = await jsonFile.readAsString();
-//  return compute(parseString, data);
-  return parseString(data);
+  return await compute(parseString, data);
+//  return parseString(data);
 }
 
 Directory parseString(String data){
